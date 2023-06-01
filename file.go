@@ -10,12 +10,12 @@ import (
 )
 
 /* =================== FILE OPS ==============================*/
-/* Load the specified text file into the current buffer return any error*/
-func (e *editor) editorOpen(filename string) error {
+/* Load the specified text file into the current Buffer return any error*/
+func (e *Editor) EditorOpen(filename string) error {
 
 	found, err := e.indexOfBufferNamed(filename)
 	if err == nil {
-		e.cb = e.buffers[found]
+		e.cb = e.Buffers[found]
 		return nil
 	}
 	e.addNewBuffer()
@@ -30,7 +30,7 @@ func (e *editor) editorOpen(filename string) error {
 	for scanner.Scan() {
 		// does the line contain the newline?
 		line := scanner.Text()
-		e.editorInsertRow(e.cb.numrows, line)
+		e.EditorInsertRow(e.cb.numrows, line)
 	}
 
 	if err := scanner.Err(); err != nil {
@@ -42,12 +42,12 @@ func (e *editor) editorOpen(filename string) error {
 }
 
 /* Save the currentLine file on disk. Return 0 on success, 1 on error. */
-func (e *editor) editorSave() error {
+func (e *Editor) EditorSave() error {
 	if e.cb.filename[:1] == "*" {
 		mesg := "Save File: %s"
 		input, err := e.getInput(mesg)
 		if err != nil {
-			e.editorSetStatusMessage(mesg, err)
+			e.EditorSetStatusMessage(mesg, err)
 		}
 		if input == "" {
 			return nil
@@ -68,33 +68,33 @@ func (e *editor) editorSave() error {
 	err = w.Flush()
 	e.checkErr(err)
 	if err == nil {
-		e.editorSetStatusMessage("Saved %d bytes.", totalbytes)
+		e.EditorSetStatusMessage("Saved %d bytes.", totalbytes)
 		e.cb.dirty = false
 	}
 	return err
 }
 
-func (e *editor) loadFile() error {
+func (e *Editor) loadFile() error {
 	mesg := "Load File: %s"
 	input, err := e.getInput(mesg)
 	if err != nil {
-		e.editorSetStatusMessage("Load File: %s", err)
+		e.EditorSetStatusMessage("Load File: %s", err)
 	}
 	if input == "" {
 		return nil
 	}
-	err = e.editorOpen(input)
+	err = e.EditorOpen(input)
 	if err != nil {
-		e.editorSetStatusMessage("Load File: Error: %s", err)
+		e.EditorSetStatusMessage("Load File: Error: %s", err)
 	}
 	return nil
 }
 
-func (e *editor) getInput(mesg string) (string, error) {
+func (e *Editor) getInput(mesg string) (string, error) {
 	input := ""
 	for {
-		e.editorSetStatusMessage(mesg, input)
-		e.editorRefreshScreen(false)
+		e.EditorSetStatusMessage(mesg, input)
+		e.EditorRefreshScreen(false)
 		termbox.SetCursor(len(mesg)+len(input)-1, e.screenrows+1)
 		ev := <-e.events
 		if ev.Ch != 0 {
@@ -106,7 +106,7 @@ func (e *editor) getInput(mesg string) (string, error) {
 			case termbox.KeyEnter:
 				return input, nil
 			case termbox.KeyCtrlC:
-				e.editorSetStatusMessage("killed.")
+				e.EditorSetStatusMessage("killed.")
 				return "", nil
 			case termbox.KeyBackspace2, termbox.KeyBackspace:
 				if len(input) > 0 {
@@ -115,16 +115,16 @@ func (e *editor) getInput(mesg string) (string, error) {
 					input = ""
 				}
 			case termbox.KeyCtrlG:
-				e.editorSetStatusMessage("")
+				e.EditorSetStatusMessage("")
 				return "", nil
 
 			case termbox.KeyEsc:
-				e.editorSetStatusMessage("Escape not yet implemented")
+				e.EditorSetStatusMessage("Escape not yet implemented")
 				return "", nil
 
 			default:
-				e.editorSetStatusMessage(mesg, input)
-				e.editorRefreshScreen(false)
+				e.EditorSetStatusMessage(mesg, input)
+				e.EditorRefreshScreen(false)
 				termbox.SetCursor(len(mesg)+len(input)-1, e.screenrows+1)
 			}
 		}

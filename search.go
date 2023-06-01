@@ -6,11 +6,11 @@ import (
 
 /* =============================== Find mode ================================ */
 
-func (e *editor) runeAt(r, c int) rune {
+func (e *Editor) runeAt(r, c int) rune {
 	return e.cb.rows[r].runes[c]
 }
 
-func (e *editor) searchForward(startr, startc int, stext string) (fr, rc int) {
+func (e *Editor) searchForward(startr, startc int, stext string) (fr, rc int) {
 	if len(stext) == 0 {
 		return -1, -1
 	}
@@ -50,7 +50,7 @@ func reverse(s string) []rune {
 	return r
 }
 
-func (e *editor) searchBackwards(startr, startc int, stext string) (fr, fc int) {
+func (e *Editor) searchBackwards(startr, startc int, stext string) (fr, fc int) {
 	if len(stext) == 0 {
 		return -1, -1
 	}
@@ -89,7 +89,7 @@ func (e *editor) searchBackwards(startr, startc int, stext string) (fr, fc int) 
 	return -1, -1
 }
 
-func (e *editor) editorFind() {
+func (e *Editor) EditorFind() {
 	query := ""
 	startrow := e.cb.point.ro + e.cb.point.r
 	startcol := e.cb.point.co + e.cb.point.c
@@ -102,8 +102,8 @@ func (e *editor) editorFind() {
 	savedColoff, savedRowoff := e.cb.point.co, e.cb.point.ro
 	mesg := "Search: %s (Use Esc/Arrows/Enter)"
 	for {
-		e.editorSetStatusMessage(mesg, query)
-		e.editorRefreshScreen(false)
+		e.EditorSetStatusMessage(mesg, query)
+		e.EditorRefreshScreen(false)
 		ev := <-e.events
 		if ev.Ch != 0 {
 			ch := ev.Ch
@@ -122,10 +122,10 @@ func (e *editor) editorFind() {
 				lastLineMatch, lastColMatch = startrow, startcol
 				findDirection = 1
 			case termbox.KeyEnter, termbox.KeyCtrlR:
-				e.editorSetStatusMessage("")
+				e.EditorSetStatusMessage("")
 				return
 			case termbox.KeyCtrlC:
-				e.editorSetStatusMessage("killed.")
+				e.EditorSetStatusMessage("killed.")
 				return
 			case termbox.KeyBackspace2, termbox.KeyBackspace:
 				if len(query) > 0 {
@@ -138,15 +138,15 @@ func (e *editor) editorFind() {
 			case termbox.KeyCtrlG, termbox.KeyEsc:
 				e.cb.point.c, e.cb.point.r = savedCx, savedCy
 				e.cb.point.co, e.cb.point.ro = savedColoff, savedRowoff
-				e.editorSetStatusMessage("")
+				e.EditorSetStatusMessage("")
 				return
 			case termbox.KeyArrowDown, termbox.KeyArrowRight:
 				findDirection = 1
 			case termbox.KeyArrowLeft, termbox.KeyArrowUp:
 				findDirection = -1
 			default:
-				e.editorSetStatusMessage(mesg, query)
-				e.editorRefreshScreen(false)
+				e.EditorSetStatusMessage(mesg, query)
+				e.EditorRefreshScreen(false)
 				termbox.SetCursor(len(mesg)+len(query), e.screenrows+1)
 				findDirection = 0
 			}

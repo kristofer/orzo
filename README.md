@@ -1,7 +1,7 @@
 # orzo
 
 
-orzo is a small terminal/screen text editor in less than 2K lines of Go code. It uses Go's rune (unicode) machinery. Has multiple buffers. But still single window. hope this makes it into the vault  
+orzo is a small terminal/screen text Editor in less than 2K lines of Go code. It uses Go's rune (unicode) machinery. Has multiple Buffers. But still single window. hope this makes it into the vault  
 
 ### Usage: orzo `<filename>`
 
@@ -31,18 +31,18 @@ so, you may need to `go get github.com/nsf/termbox-go`
 
 #### File/Buffer 
 * CTRL-S: Save the file
-* CTRL-Q: Quit the editor
+* CTRL-Q: Quit the Editor
 * CTRL-F: Find string in file 
 	(ESC to exit search mode, arrows to navigate to next/prev find)
 * CTRL-N: Next Buffer
-* CTRL-B: List all the buffers
-* CTRL-O: (control oh) Open File into new buffer
-* CTRL-W: kill buffer
+* CTRL-B: List all the Buffers
+* CTRL-O: (control oh) Open File into new Buffer
+* CTRL-W: kill Buffer
 
 #### Cut/Copy/Paste & Deletion
 * CTRL-Space: Set Mark
-* CTRL-X: Cut region from Mark to Cursor into paste buffer
-* CTRL-C: Copy region from Mark to Cursor into paste buffer
+* CTRL-X: Cut region from Mark to Cursor into paste Buffer
+* CTRL-C: Copy region from Mark to Cursor into paste Buffer
 * CTRL-V: Paste copied/cut region into file at Cursor
 _Once you've set the Mark, as you move the cursor,
 you should be getting underlined text showing the current
@@ -53,16 +53,16 @@ selection/region._
 
 Setting the cursor with a mouse click should work. (and so,
 it should work to set the selection. but hey, you MUST SetMark
-for a selection to start... sorry, it's not a real mouse based editor.)
+for a selection to start... sorry, it's not a real mouse based Editor.)
     
 ### Implementation Notes
 orzo was based on Kilo, a project by Salvatore Sanfilippo <antirez at gmail dot com> at  https://github.com/antirez/kilo.
 
-It's a very simple editor, with kinda-"Mac-Emacs"-like key bindings. It uses `go get github.com/nsf/termbox-go" for simple termio junk.
+It's a very simple Editor, with kinda-"Mac-Emacs"-like key bindings. It uses `go get github.com/nsf/termbox-go" for simple termio junk.
 
 The central data structure is an array of lines (type erow struct). Each line in the file has a struct, which contains an array of rune. (If you're not familiar with Go's _runes_, they are Go's unicode code points (or characters))
 
-Multiple buffers, but no window splits. Two _mini modes_,  one for the search modal operations, and
+Multiple Buffers, but no window splits. Two _mini modes_,  one for the search modal operations, and
 one for opening files.
 
 Notice the goroutine attached to events coming from termbox-go, that is pretty cool. Yet another real reason that Go routines are handy.

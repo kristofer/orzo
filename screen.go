@@ -10,7 +10,7 @@ import (
 /* ============================= Terminal update ============================ */
 
 /* This function writes the whole screen using termbox-go */
-func (e *editor) editorRefreshScreen(drawCursor bool) {
+func (e *Editor) EditorRefreshScreen(drawCursor bool) {
 	termbox.Clear(termbox.ColorBlack, termbox.ColorDefault)
 	// lastSelCol := -1
 	// Draw the runes on the screen
@@ -81,7 +81,7 @@ func (e *editor) editorRefreshScreen(drawCursor bool) {
 	termbox.Flush()
 }
 
-func (e *editor) inSelectedRegion(c, r int) bool {
+func (e *Editor) inSelectedRegion(c, r int) bool {
 	if e.cb.markSet == false {
 		return false
 	}
@@ -107,7 +107,7 @@ func (e *editor) inSelectedRegion(c, r int) bool {
 	return false
 }
 
-func (e *editor) adjustCursor() int {
+func (e *Editor) adjustCursor() int {
 	cx := 0
 	filerow := e.cb.point.ro + e.cb.point.r
 	var row *erow // := nil
@@ -124,7 +124,7 @@ func (e *editor) adjustCursor() int {
 	}
 	return cx
 }
-func (e *editor) drawline(y int, fg, bg termbox.Attribute, msg string) {
+func (e *Editor) drawline(y int, fg, bg termbox.Attribute, msg string) {
 	x := 0
 	for _, c := range msg {
 		termbox.SetCell(x, y, c, fg, bg)
@@ -136,22 +136,21 @@ func (e *editor) drawline(y int, fg, bg termbox.Attribute, msg string) {
 
 }
 
-/* Set an editor status message for the second line of the status, at the
+/* Set an Editor status message for the second line of the status, at the
  * end of the screen. */
-func (e *editor) editorSetStatusMessage(fm string, args ...interface{}) {
+func (e *Editor) EditorSetStatusMessage(fm string, args ...interface{}) {
 	e.statusmsg = fmt.Sprintf(fm, args...)
 	e.statusmsgTime = time.Now()
-	return
 }
 
-func (e *editor) moveToBufferStart() {
+func (e *Editor) moveToBufferStart() {
 	e.cb.point.c = 0
 	e.cb.point.co = 0
 	e.cb.point.r = 0
 	e.cb.point.ro = 0
 }
 
-func (e *editor) moveToBufferEnd() {
+func (e *Editor) moveToBufferEnd() {
 	e.cb.point.c = e.cb.rows[e.cb.numrows-1].size
 	e.cb.point.co = 0
 	e.cb.point.r = e.screenrows - 1

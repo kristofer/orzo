@@ -8,7 +8,7 @@ import (
 	termbox "github.com/nsf/termbox-go"
 )
 
-/* orzo -- A very simple editor in less than 1000 lines of Go code .
+/* orzo -- A very simple Editor in less than 1000 lines of Go code .
  *
  * -----------------------------------------------------------------------
  *
@@ -44,13 +44,13 @@ import (
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-const orzoVersion = "1.4"
+const orzoVersion = "2.0"
 const orzoListBuffers = "*orzo Buffers*"
 const tabWidth = 4
 
 // orzo is the top-level exported type
-type orzo struct {
-	orzo *editor
+type Orzo struct {
+	Orzo *Editor
 }
 
 /* This structure represents a single line of the file we are editing. */
@@ -74,13 +74,13 @@ type cursor struct {
 // looking at the 500th row in the file.
 // It's the "scroll" offset
 
-type editor struct {
+type Editor struct {
 	events        chan termbox.Event
-	buffers       []*buffer
-	cb            *buffer
+	Buffers       []*Buffer
+	cb            *Buffer
 	screenrows    int /* Number of rows that we can show */
 	screencols    int /* Number of cols that we can show */
-	pastebuffer   string
+	pasteBuffer   string
 	quitTimes     int
 	done          bool
 	statusmsg     string
@@ -89,7 +89,7 @@ type editor struct {
 	bgcolor       termbox.Attribute
 }
 
-type buffer struct {
+type Buffer struct {
 	point    cursor
 	mark     cursor
 	markSet  bool
@@ -100,9 +100,9 @@ type buffer struct {
 	filename string /* Currently open filename */
 }
 
-func (e *editor) checkErr(er error) {
+func (e *Editor) checkErr(er error) {
 	if er != nil {
-		e.editorSetStatusMessage("%s", er)
+		e.EditorSetStatusMessage("%s", er)
 	}
 }
 
@@ -110,7 +110,7 @@ func (e *editor) checkErr(er error) {
 const (
 	KeyNull   = 0   /* NULL ctrl-space set mark */
 	CtrlA     = 1   /* Ctrl-a BOL */
-	CtrlB     = 2   /* Ctrl-B list buffers */
+	CtrlB     = 2   /* Ctrl-B list Buffers */
 	CtrlC     = 3   /* Ctrl-c  copy */
 	CtrlE     = 5   /* Ctrl-e  EOL */
 	CtrlD     = 4   /* Ctrl-d del forward? */
@@ -126,7 +126,7 @@ const (
 	CtrlS     = 19  /* Ctrl-s save*/
 	CtrlU     = 21  /* Ctrl-u number of times??*/
 	CtrlV     = 22  /* Ctrl-V paste */
-	CtrlW     = 23  /* Ctrl-W kill buffer */
+	CtrlW     = 23  /* Ctrl-W kill Buffer */
 	CtrlX     = 24  /* Ctrl-X cut */
 	CtrlY     = 25  /* Help */
 	CtrlZ     = 26  /* ?? */
@@ -153,10 +153,10 @@ type State struct {
 	termios syscall.Termios
 }
 
-// NewEditor generates a new editor for use
-func (e *editor) initEditor() {
+// NewEditor generates a new Editor for use
+func (e *Editor) initEditor() {
 	e.done = false
-	e.buffers = []*buffer{}
+	e.Buffers = []*Buffer{}
 	e.addNewBuffer()
 	e.cb.point.c, e.cb.point.r = 0, 0
 	e.cb.point.ro, e.cb.point.co = 0, 0
@@ -169,17 +169,17 @@ func (e *editor) initEditor() {
 	e.fgcolor, e.bgcolor = termbox.ColorDefault, termbox.ColorDefault // retrieved from environment
 }
 
-func (e *editor) resize() {
+func (e *Editor) resize() {
 	e.screencols, e.screenrows = termbox.Size()
 	e.screenrows -= 2 /* Get room for status bar. */
 }
 
-func (e *editor) readOnly() {
-	e.editorSetStatusMessage("buffer %s is Read Only", e.cb.filename)
+func (e *Editor) readOnly() {
+	e.EditorSetStatusMessage("Buffer %s is Read Only", e.cb.filename)
 }
 
-// Start runs an editor
-func (z *orzo) Start(filename string) {
+// Start runs an Editor
+func (z *Orzo) Start(filename string) {
 
 	err := termbox.Init()
 	if err != nil {
@@ -187,11 +187,11 @@ func (z *orzo) Start(filename string) {
 	}
 	defer termbox.Close()
 
-	z.orzo = &editor{}
-	e := z.orzo
+	z.Orzo = &Editor{}
+	e := z.Orzo
 	e.initEditor()
 
-	err = e.editorOpen(filename)
+	err = e.EditorOpen(filename)
 	if err != nil {
 		termbox.Close()
 		fmt.Printf("orzo: error %s", err)
@@ -200,7 +200,7 @@ func (z *orzo) Start(filename string) {
 	termbox.SetInputMode(termbox.InputAlt | termbox.InputEsc | termbox.InputMouse)
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 
-	e.editorSetStatusMessage("CTRL-Y = HELP | Ctrl-S = save | Ctrl-Q = quit | Ctrl-F = find ")
+	e.EditorSetStatusMessage("CTRL-Y = HELP | Ctrl-S = save | Ctrl-Q = quit | Ctrl-F = find ")
 
 	e.events = make(chan termbox.Event, 20)
 	go func() {
@@ -209,10 +209,10 @@ func (z *orzo) Start(filename string) {
 		}
 	}()
 	for e.done != true {
-		e.editorRefreshScreen(true)
+		e.EditorRefreshScreen(true)
 		select {
 		case ev := <-e.events:
-			e.editorProcessEvent(ev)
+			e.EditorProcessEvent(ev)
 			termbox.Flush()
 		}
 	}

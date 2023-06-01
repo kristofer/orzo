@@ -12,17 +12,17 @@ const helptext = ` ** orzo: Help on keyboard commands
  Use ArrowKeys to move Cursor around.
 
  CTRL-S: Save the file
- CTRL-Q: Quit the editor
+ CTRL-Q: Quit the Editor
  CTRL-F: Find string in file 
 	(ESC to exit search mode, arrows to navigate to next/prev find)
  CTRL-N: Next Buffer
- CTRL-B: List all the buffers
- CTRL-O: (control oh) Open File into new buffer
- CTRL-W: kill buffer
+ CTRL-B: List all the Buffers
+ CTRL-O: (control oh) Open File into new Buffer
+ CTRL-W: kill Buffer
 
  CTRL-Space: Set Mark
- CTRL-X: Cut region from Mark to Cursor into paste buffer
- CTRL-C: Copy region from Mark to Cursor into paste buffer
+ CTRL-X: Cut region from Mark to Cursor into paste Buffer
+ CTRL-C: Copy region from Mark to Cursor into paste Buffer
  CTRL-V: Paste copied/cut region into file at Cursor
 Once you've set the Mark, as you move the cursor,
 you should be getting underlined text showing the current
@@ -44,14 +44,14 @@ selection/region.
 
 Setting the cursor with a mouse click should work. (and so,
 it should work to set the selection. but hey, you MUST SetMark
-for a selection to start... sorry, it's not a real mouse based editor.)
+for a selection to start... sorry, it's not a real mouse based Editor.)
 `
 
-func (e *editor) loadHelp() error {
+func (e *Editor) loadHelp() error {
 	orzoHELP := "*orzo Help*"
 	found, err := e.indexOfBufferNamed(orzoHELP)
 	if err == nil {
-		e.cb = e.buffers[found]
+		e.cb = e.Buffers[found]
 		return nil
 	} else {
 		e.addNewBuffer()
@@ -60,7 +60,7 @@ func (e *editor) loadHelp() error {
 		for scanner.Scan() {
 			// does the line contain the newline?
 			line := scanner.Text()
-			e.editorInsertRow(e.cb.numrows, line)
+			e.EditorInsertRow(e.cb.numrows, line)
 		}
 
 		if err := scanner.Err(); err != nil {

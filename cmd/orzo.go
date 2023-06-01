@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"os"
+
+	"github.com/kristofer/orzo"
 )
 
 func main() {
@@ -24,6 +26,6 @@ func main() {
 		return
 	}
 
-	editor := &orzo.orzo{}
-	editor.Start(argv[1])
+	Editor := &orzo.Orzo{}
+	Editor.Start(argv[1])
 }

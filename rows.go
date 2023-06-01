@@ -3,7 +3,7 @@ package orzo
 /* ======================= Editor rows implementation ======================= */
 
 /* Update the rendered version and the syntax highlight of a row. */
-func (e *editor) editorUpdateRow(row *erow) {
+func (e *Editor) EditorUpdateRow(row *erow) {
 	tabs := e.countTabs(row, row.size-1)
 	row.render = make([]rune, len(row.runes)+tabs*tabWidth)
 	row.rsize = len(row.render)
@@ -25,7 +25,7 @@ func (e *editor) editorUpdateRow(row *erow) {
 	//row.rsize = idx
 }
 
-func (e *editor) countTabs(row *erow, toCol int) int {
+func (e *Editor) countTabs(row *erow, toCol int) int {
 	tabs := 0
 	for j := 0; j <= toCol; j++ {
 		if row.runes[j] == Tab {
@@ -35,13 +35,13 @@ func (e *editor) countTabs(row *erow, toCol int) int {
 	return tabs
 }
 
-func (e *editor) negativeOffsetFor(tabs int) int {
+func (e *Editor) negativeOffsetFor(tabs int) int {
 	return -1.0 * (tabs * tabWidth)
 }
 
 /* Insert a row at the specified position, shifting the other rows on the bottom
  * if required. */
-func (e *editor) editorInsertRow(at int, s string) {
+func (e *Editor) EditorInsertRow(at int, s string) {
 	if e.cb.readonly {
 		e.readOnly()
 		return
@@ -62,12 +62,12 @@ func (e *editor) editorInsertRow(at int, s string) {
 	trow.rsize = 0
 	trow.idx = at
 	e.cb.rows[at] = trow
-	e.editorUpdateRow(e.cb.rows[at])
+	e.EditorUpdateRow(e.cb.rows[at])
 	e.cb.numrows++
 	e.cb.dirty = true
 }
 
-func (e *editor) editorDelRow(at int) {
+func (e *Editor) EditorDelRow(at int) {
 	if e.cb.readonly {
 		e.readOnly()
 		return
@@ -80,7 +80,7 @@ func (e *editor) editorDelRow(at int) {
 	e.cb.dirty = true
 }
 
-func (e *editor) editorRowsToString() string {
+func (e *Editor) EditorRowsToString() string {
 	ret := ""
 	for j := 0; j < e.cb.numrows; j++ {
 		ret = ret + string(e.cb.rows[j].runes) + "\n"
@@ -102,31 +102,31 @@ func insertRune(slice []rune, index int, value rune) []rune {
 
 /* Insert a character at the specified position in a row, moving the remaining
  * runes on the right if needed. */
-func (e *editor) editorRowInsertChar(row *erow, at int, rch rune) {
+func (e *Editor) EditorRowInsertChar(row *erow, at int, rch rune) {
 	if e.cb.readonly {
 		e.readOnly()
 		return
 	}
 	row.runes = insertRune(row.runes, at, rch)
 	row.size = len(row.runes)
-	e.editorUpdateRow(row)
+	e.EditorUpdateRow(row)
 	e.cb.dirty = true
 }
 
 /* Append the string 's' at the end of a row */
-func (e *editor) editorRowAppendString(row *erow, s string) { //}, size_t len) {
+func (e *Editor) EditorRowAppendString(row *erow, s string) { //}, size_t len) {
 	if e.cb.readonly {
 		e.readOnly()
 		return
 	}
 	row.runes = append(row.runes, []rune(s)...)
 	row.size = len(row.runes)
-	e.editorUpdateRow(row)
+	e.EditorUpdateRow(row)
 	e.cb.dirty = true
 }
 
 /* Delete the character at offset 'at' from the specified row. */
-func (e *editor) editorRowDelChar(row *erow, at int) {
+func (e *Editor) EditorRowDelChar(row *erow, at int) {
 	if e.cb.readonly {
 		e.readOnly()
 		return
@@ -140,7 +140,7 @@ func (e *editor) editorRowDelChar(row *erow, at int) {
 }
 
 /* Insert the specified char at the currentLine prompt position. */
-func (e *editor) editorInsertChar(rch rune) {
+func (e *Editor) EditorInsertChar(rch rune) {
 	if e.cb.readonly {
 		e.readOnly()
 		return
@@ -155,11 +155,11 @@ func (e *editor) editorInsertChar(rch rune) {
 	 * logical representaion of the file, add enough empty rows as needed. */
 	if row == nil {
 		for e.cb.numrows <= filerow {
-			e.editorInsertRow(e.cb.numrows, "")
+			e.EditorInsertRow(e.cb.numrows, "")
 		}
 	}
 	row = e.cb.rows[filerow]
-	e.editorRowInsertChar(row, filecol, rch)
+	e.EditorRowInsertChar(row, filecol, rch)
 	if e.cb.point.c == e.screencols-1 {
 		e.cb.point.co++
 	} else {
@@ -170,7 +170,7 @@ func (e *editor) editorInsertChar(rch rune) {
 
 /* Inserting a newline is slightly complex as we have to handle inserting a
  * newline in the middle of a line, splitting the line as needed. */
-func (e *editor) editorInsertNewline() {
+func (e *Editor) EditorInsertNewline() {
 	filerow := e.cb.point.ro + e.cb.point.r
 	filecol := e.cb.point.co + e.cb.point.c
 	var row *erow
@@ -179,7 +179,7 @@ func (e *editor) editorInsertNewline() {
 	}
 	if row == nil {
 		if filerow == e.cb.numrows {
-			e.editorInsertRow(filerow, "")
+			e.EditorInsertRow(filerow, "")
 			e.fixcursor()
 		}
 		return
@@ -190,20 +190,20 @@ func (e *editor) editorInsertNewline() {
 		filecol = row.size
 	}
 	if filecol == 0 {
-		e.editorInsertRow(filerow, "")
+		e.EditorInsertRow(filerow, "")
 	} else {
 		/* We are in the middle of a line. Split it between two rows. */
-		e.editorInsertRow(filerow+1, string(row.runes[filecol:]))
+		e.EditorInsertRow(filerow+1, string(row.runes[filecol:]))
 		row = e.cb.rows[filerow]
 		e.cb.rows[filerow].runes = row.runes[:filecol]
 		row.size = len(e.cb.rows[filerow].runes)
-		e.editorUpdateRow(row)
+		e.EditorUpdateRow(row)
 	}
 	// fixcursor:
 	e.fixcursor()
 }
 
-func (e *editor) fixcursor() {
+func (e *Editor) fixcursor() {
 	if e.cb.point.r == e.screenrows-1 {
 		e.cb.point.ro++
 	} else {
@@ -214,7 +214,7 @@ func (e *editor) fixcursor() {
 }
 
 /* Delete the char at the currentLine cursor position. */
-func (e *editor) editorDelChar() {
+func (e *Editor) EditorDelChar() {
 	if e.cb.readonly {
 		e.readOnly()
 		return
@@ -232,8 +232,8 @@ func (e *editor) editorDelChar() {
 		/* Handle the case of column 0, we need to move the currentLine line
 		 * on the right of the previous one. */
 		filecol = e.cb.rows[filerow-1].size
-		e.editorRowAppendString(e.cb.rows[filerow-1], string(row.runes))
-		e.editorDelRow(filerow)
+		e.EditorRowAppendString(e.cb.rows[filerow-1], string(row.runes))
+		e.EditorDelRow(filerow)
 		row = nil
 		if e.cb.point.r == 0 {
 			e.cb.point.ro--
@@ -247,7 +247,7 @@ func (e *editor) editorDelChar() {
 			e.cb.point.co += shift
 		}
 	} else {
-		e.editorRowDelChar(row, filecol-1)
+		e.EditorRowDelChar(row, filecol-1)
 		if e.cb.point.c == 0 && e.cb.point.co != 0 {
 			e.cb.point.co--
 		} else {
@@ -255,26 +255,26 @@ func (e *editor) editorDelChar() {
 		}
 	}
 	if row != nil {
-		e.editorUpdateRow(row)
+		e.EditorUpdateRow(row)
 	}
 	e.cb.dirty = true
 }
 
-func (e *editor) movetoLineStart() {
+func (e *Editor) movetoLineStart() {
 	e.cb.point.c = 0
 }
-func (e *editor) movetoLineEnd() {
+func (e *Editor) movetoLineEnd() {
 	e.cb.point.c = e.cb.rows[e.cb.point.ro+e.cb.point.r].size
 }
-func (e *editor) killtoLineEnd() {
+func (e *Editor) killtoLineEnd() {
 	linesize := e.cb.rows[e.cb.point.ro+e.cb.point.r].size
 	if linesize > 0 {
 		e.movetoLineEnd()
 		for k := 0; k < linesize; k++ {
-			e.editorDelChar()
+			e.EditorDelChar()
 		}
 	}
 	if linesize == 0 {
-		e.editorDelRow(e.cb.point.ro + e.cb.point.r)
+		e.EditorDelRow(e.cb.point.ro + e.cb.point.r)
 	}
 }

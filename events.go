@@ -7,7 +7,7 @@ import (
 /* ========================= Editor events handling  ======================== */
 
 /* Handle cursor position change because arrow keys were pressed. */
-func (e *editor) editorMoveCursor(rch termbox.Key) {
+func (e *Editor) EditorMoveCursor(rch termbox.Key) {
 	filerow := e.cb.point.ro + e.cb.point.r
 	filecol := e.cb.point.co + e.cb.point.c
 	var row *erow
@@ -85,25 +85,25 @@ func (e *editor) editorMoveCursor(rch termbox.Key) {
 			e.cb.point.c = 0
 		}
 	}
-	e.editorSetStatusMessage("point(%d,%d)[%d,%d]s(%d,%d)", e.cb.point.c, e.cb.point.r, e.cb.point.co, e.cb.point.ro, e.screencols, e.screenrows)
+	e.EditorSetStatusMessage("point(%d,%d)[%d,%d]s(%d,%d)", e.cb.point.c, e.cb.point.r, e.cb.point.co, e.cb.point.ro, e.screencols, e.screenrows)
 }
 
 /* Process events arriving from the standard input, which is, the user
  * is typing stuff on the terminal. */
-func (e *editor) editorProcessEvent(ev termbox.Event) {
-	//log.Printf("editorProcessEvent %#v\n", ev)
+func (e *Editor) EditorProcessEvent(ev termbox.Event) {
+	//log.Printf("EditorProcessEvent %#v\n", ev)
 	if ev.Ch != 0 {
-		e.editorInsertChar(ev.Ch)
+		e.EditorInsertChar(ev.Ch)
 		return
 	}
 	char := int16(ev.Key)
 	switch char {
 	case Space:
-		e.editorInsertChar(' ')
+		e.EditorInsertChar(' ')
 	case Tab:
-		e.editorInsertChar('\t')
+		e.EditorInsertChar('\t')
 	case Enter: /* Enter */
-		e.editorInsertNewline()
+		e.EditorInsertNewline()
 	case CtrlB:
 		e.listBuffers()
 	case CtrlC:
@@ -129,7 +129,7 @@ func (e *editor) editorProcessEvent(ev termbox.Event) {
 	case CtrlQ: /* Ctrl-q */
 		/* Quit if the file was already saved. */
 		if e.cb.dirty && e.quitTimes > 0 {
-			e.editorSetStatusMessage("WARNING!!! File has unsaved changes. Press Ctrl-Q %d more times to quit.", e.quitTimes)
+			e.EditorSetStatusMessage("WARNING!!! File has unsaved changes. Press Ctrl-Q %d more times to quit.", e.quitTimes)
 			e.quitTimes--
 		}
 		//fmt.Println("Done.")
@@ -138,11 +138,11 @@ func (e *editor) editorProcessEvent(ev termbox.Event) {
 		}
 	case CtrlS: /* Ctrl-s */
 		//fmt.Println("Save.")
-		e.editorSave()
+		e.EditorSave()
 	case CtrlF:
-		e.editorFind()
+		e.EditorFind()
 	case Backspace, CtrlH:
-		e.editorDelChar()
+		e.EditorDelChar()
 	default:
 	}
 
@@ -150,12 +150,12 @@ func (e *editor) editorProcessEvent(ev termbox.Event) {
 	case KeyNull:
 		e.setMark()
 	case DelKey:
-		e.editorDelChar()
+		e.EditorDelChar()
 	case HomeKey:
-		//e.editorSetStatusMessage("Home: Beginning of Buffer.")
+		//e.EditorSetStatusMessage("Home: Beginning of Buffer.")
 		e.moveToBufferStart()
 	case EndKey:
-		e.editorSetStatusMessage("End: End of Buffer.")
+		e.EditorSetStatusMessage("End: End of Buffer.")
 		e.moveToBufferEnd()
 	case PageUp, PageDown:
 		if ev.Key == PageUp && e.cb.point.r != 0 {
@@ -168,20 +168,20 @@ func (e *editor) editorProcessEvent(ev termbox.Event) {
 		times := e.screenrows
 		for times > 0 {
 			if ev.Key == PageUp {
-				e.editorMoveCursor(ArrowUp)
+				e.EditorMoveCursor(ArrowUp)
 			} else {
-				e.editorMoveCursor(ArrowDown)
+				e.EditorMoveCursor(ArrowDown)
 			}
 			times--
 		}
 	case ArrowUp, ArrowDown, ArrowLeft, ArrowRight:
-		e.editorMoveCursor(ev.Key)
+		e.EditorMoveCursor(ev.Key)
 	case CtrlL: /* ctrl+l, clear screen */
-		e.editorRefreshScreen(true)
+		e.EditorRefreshScreen(true)
 	case Esc:
 		/* Nothing to do for Esc in this mode. */
 	case termbox.KeyCtrlG:
-		e.editorSetStatusMessage("Mark cleared.")
+		e.EditorSetStatusMessage("Mark cleared.")
 		e.noMark()
 	default:
 
@@ -191,7 +191,7 @@ func (e *editor) editorProcessEvent(ev termbox.Event) {
 	switch ev.Type {
 	case termbox.EventMouse:
 		//termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
-		e.editorSetStatusMessage("Mouse: c %d, r %d ", ev.MouseX+1, ev.MouseY+1)
+		e.EditorSetStatusMessage("Mouse: c %d, r %d ", ev.MouseX+1, ev.MouseY+1)
 		e.setPointForMouse(ev.MouseX, ev.MouseY)
 		return
 	case termbox.EventResize:
@@ -201,7 +201,7 @@ func (e *editor) editorProcessEvent(ev termbox.Event) {
 	}
 }
 
-func (e *editor) setPointForMouse(mc, mr int) {
+func (e *Editor) setPointForMouse(mc, mr int) {
 	if mr > e.screenrows {
 		mr = e.screenrows
 	}
@@ -221,7 +221,7 @@ func (e *editor) setPointForMouse(mc, mr int) {
 }
 
 // mapRenderToRunes should map screencolumn to runes column through the render line
-func (e *editor) mapRenderToRunes(row *erow, col int) int {
+func (e *Editor) mapRenderToRunes(row *erow, col int) int {
 	nc := 0
 	row.rsize = len(row.render)
 	hits := make([]int, row.rsize)
