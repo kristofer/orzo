@@ -110,7 +110,7 @@ func (e *Editor) checkErr(er error) {
 const (
 	KeyNull   = 0   /* NULL ctrl-space set mark */
 	CtrlA     = 1   /* Ctrl-a BOL */
-	CtrlB     = 2   /* Ctrl-B list Buffers */
+	CtrlB     = 2   /* Ctrl-b list Buffers */
 	CtrlC     = 3   /* Ctrl-c  copy */
 	CtrlE     = 5   /* Ctrl-e  EOL */
 	CtrlD     = 4   /* Ctrl-d del forward? */
@@ -120,14 +120,14 @@ const (
 	CtrlK     = 11  /* Ctrl+k killToEOL */
 	CtrlL     = 12  /* Ctrl+l redraw */
 	Enter     = 13  /* Enter */
-	CtrlN     = 14  /* Ctrl+n nextBuffer */
-	CtrlO     = 15  /* Ctrl+Oh load(open) file */
+	CtrlN     = 14  /* Ctrl-n nextBuffer */
+	CtrlO     = 15  /* Ctrl-o load(open) file */
 	CtrlQ     = 17  /* Ctrl-q quit*/
 	CtrlS     = 19  /* Ctrl-s save*/
 	CtrlU     = 21  /* Ctrl-u number of times??*/
-	CtrlV     = 22  /* Ctrl-V paste */
-	CtrlW     = 23  /* Ctrl-W kill Buffer */
-	CtrlX     = 24  /* Ctrl-X cut */
+	CtrlV     = 22  /* Ctrl-v paste */
+	CtrlW     = 23  /* Ctrl-w kill Buffer */
+	CtrlX     = 24  /* Ctrl-x cut */
 	CtrlY     = 25  /* Help */
 	CtrlZ     = 26  /* ?? */
 	Esc       = 27  /* Escape */
