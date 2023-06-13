@@ -8,12 +8,18 @@ import (
 )
 
 type Buffer struct {
-	T     *Table
-	Point int
-	Mark  int
-}
-type PieceSource int
+	T        *Table
+	Point    int
+	Mark     int
+	markSet  bool
+	//numrows  int  /* Number of rows in file */
+	dirty    bool /* File modified but not saved. */
+	readonly bool
+	filename string /* Currently open filename */
 
+}
+
+type PieceSource int
 const (
 	Content PieceSource = 0
 	Add     PieceSource = 1
@@ -34,12 +40,16 @@ type Piece struct {
 	Run    int
 }
 
-func NewBuffer(c string) *Buffer {
+func NewBuffer(c string, ro bool) *Buffer {
 	b := &Buffer{}
 	b.T = &Table{Content: c, Add: "", Mods: []*Piece{}}
-	b.T.Mods = append(b.T.Mods, NewPiece(Content, 0, len(c)))
+	b.T.Mods = append(b.T.Mods, newPiece(Content, 0, len(c)))
 	b.Point = 0
 	b.Mark = 0
+	b.markSet = false
+	b.dirty = false
+	b.filename = ""
+	b.readonly = ro;
 	return b
 }
 
@@ -48,14 +58,14 @@ func (buf *Buffer) AddRune(r rune) {
 	buf.Point += 1
 }
 
+func (buf *Buffer) SetPoint(pt int) { buf.Point = pt }
+func (buf *Buffer) SetMark(pt int)  { buf.markSet = true; buf.Mark = pt }
+func (buf *Buffer) ClearMark()      { buf.markSet = false; buf.Mark = 0 }
+
 func NewTable(c string) *Table {
 	t := &Table{Content: c, Add: "", Mods: []*Piece{}}
-	t.Mods = append(t.Mods, NewPiece(Content, 0, len(c)))
+	t.Mods = append(t.Mods, newPiece(Content, 0, len(c)))
 	return t
-}
-
-func NewPiece(s PieceSource, pt, r int) *Piece {
-	return &Piece{Source: s, Start: pt, Run: r}
 }
 
 func (t *Table) Size() int {
@@ -66,6 +76,10 @@ func (t *Table) Size() int {
 	return i
 }
 
+func newPiece(s PieceSource, pt, r int) *Piece {
+	return &Piece{Source: s, Start: pt, Run: r}
+}
+
 func (t *Table) source(ps PieceSource) string {
 	if ps == Content {
 		return t.Content
@@ -74,7 +88,7 @@ func (t *Table) source(ps PieceSource) string {
 	}
 }
 
-func (t *Table) RunForMod(index int) string {
+func (t *Table) runForMod(index int) string {
 	p := t.Mods[index]
 	return t.source(p.Source)[p.Start : p.Start+p.Run]
 }
@@ -87,15 +101,10 @@ func (t *Table) tail(p *Piece, idx int) string {
 }
 
 func (t *Table) AllContents() string {
-	//return t.contents(0, t.size())
-	// need golang's stringbuilder
 	s := ""
-
-	//t.dump()
 	for i := 0; i < len(t.Mods); i++ {
-		s += t.RunForMod(i)
+		s += t.runForMod(i)
 	}
-	//log.Println("ac: ", s)
 	return string(s)
 }
 
@@ -111,7 +120,7 @@ func (t *Table) Contents(start, end int) string {
 	endFrag := t.tail(ep, ee)
 	s += startFrag
 	for i := si + 1; i < ei; i++ {
-		s += t.RunForMod(i)
+		s += t.runForMod(i)
 	}
 	s += endFrag
 	return s
@@ -119,7 +128,7 @@ func (t *Table) Contents(start, end int) string {
 
 func (t *Table) IndexOf(idx int) byte {
 	e, i := t.pieceAt(idx)
-	return t.RunForMod(e)[i]
+	return t.runForMod(e)[i]
 }
 
 func (t *Table) appendPiece(p *Piece) {
@@ -162,7 +171,7 @@ func (t *Table) Insert(s string, pt int) error {
 		//log.Println("adding a rune to existing slice")
 		return nil
 	}
-	np := NewPiece(Add, len(t.Add), len(s))
+	np := newPiece(Add, len(t.Add), len(s))
 	t.Add += s
 	//np.dump(log.New(os.Stderr, "np ", 0))
 	// Updating the entry in piece table (breaking an entry into two or three)
@@ -249,8 +258,8 @@ func (p *Piece) splitAt(idx int) (left, right *Piece) {
 	if idx == 0 || idx == p.Run {
 		return nil, nil
 	}
-	left = NewPiece(p.Source, p.Start, idx)
-	right = NewPiece(p.Source, p.Start+idx, p.Run-idx)
+	left = newPiece(p.Source, p.Start, idx)
+	right = newPiece(p.Source, p.Start+idx, p.Run-idx)
 	return
 }
 
@@ -263,14 +272,14 @@ func (t *Table) Dump() {
 	l.Println("Add    ", &t.Add, t.Add)
 	for i := 0; i < len(t.Mods); i++ {
 		p := t.Mods[i]
-		p.dump(l)
-		l.Println(p, t.RunForMod(i))
+		p.Dump(l)
+		l.Println(p, t.runForMod(i))
 	}
 	l.Println(">> End")
 
 }
 
-func (p *Piece) dump(f *log.Logger) {
+func (p *Piece) Dump(f *log.Logger) {
 	_, filename, line, _ := runtime.Caller(1)
 	f.Println(p.Source, p.Start, p.Run, "->", filename, line)
 }

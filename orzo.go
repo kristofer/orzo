@@ -89,6 +89,20 @@ type Editor struct {
 	bgcolor       termbox.Attribute
 }
 
+type TextContainer interface {
+	SetPoint(pt int)
+	SetMark(pt int)
+	Insert(s string, pt int) error
+	AddRune(r rune)
+	IndexOf(idx int) byte
+	DeleteRune(idx int)
+	Size() int
+}
+
+type Terminal interface {
+	
+}
+
 type Buffer struct {
 	point    cursor
 	mark     cursor

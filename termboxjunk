@@ -1,0 +1,57 @@
+events.go:func (e *Editor) EditorMoveCursor(rch termbox.Key) {
+events.go:func (e *Editor) EditorProcessEvent(ev termbox.Event) {
+events.go:	case termbox.KeyCtrlG:
+events.go:	case termbox.EventMouse:
+events.go:		//termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
+events.go:	case termbox.EventResize:
+file.go:		termbox.SetCursor(len(mesg)+len(input)-1, e.screenrows+1)
+file.go:			case termbox.KeyEnter:
+file.go:			case termbox.KeyCtrlC:
+file.go:			case termbox.KeyBackspace2, termbox.KeyBackspace:
+file.go:			case termbox.KeyCtrlG:
+file.go:			case termbox.KeyEsc:
+file.go:				termbox.SetCursor(len(mesg)+len(input)-1, e.screenrows+1)
+orzo.go:	events        chan termbox.Event
+orzo.go:	fgcolor       termbox.Attribute
+orzo.go:	bgcolor       termbox.Attribute
+orzo.go:	ArrowLeft  = termbox.KeyArrowLeft
+orzo.go:	ArrowRight = termbox.KeyArrowRight
+orzo.go:	ArrowUp    = termbox.KeyArrowUp
+orzo.go:	ArrowDown  = termbox.KeyArrowDown
+orzo.go:	DelKey     = termbox.KeyDelete
+orzo.go:	HomeKey    = termbox.KeyHome
+orzo.go:	EndKey     = termbox.KeyEnd
+orzo.go:	PageUp     = termbox.KeyPgup
+orzo.go:	PageDown   = termbox.KeyPgdn
+orzo.go:	e.screencols, e.screenrows = termbox.Size()
+orzo.go:	e.fgcolor, e.bgcolor = termbox.ColorDefault, termbox.ColorDefault // retrieved from environment
+orzo.go:	e.screencols, e.screenrows = termbox.Size()
+orzo.go:	err := termbox.Init()
+orzo.go:	defer termbox.Close()
+orzo.go:		termbox.Close()
+orzo.go:	termbox.SetOutputMode(termbox.OutputNormal)
+orzo.go:	termbox.SetInputMode(termbox.InputAlt | termbox.InputEsc | termbox.InputMouse)
+orzo.go:	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
+orzo.go:	e.events = make(chan termbox.Event, 20)
+orzo.go:			e.events <- termbox.PollEvent()
+orzo.go:			termbox.Flush()
+screen.go:/* This function writes the whole screen using termbox-go */
+screen.go:	termbox.Clear(termbox.ColorBlack, termbox.ColorDefault)
+screen.go:						termbox.SetCell(j, y, runeToPrint, e.fgcolor|termbox.AttrUnderline, e.bgcolor)
+screen.go:						termbox.SetCell(j, y, runeToPrint, e.fgcolor, e.bgcolor)
+screen.go:	e.drawline(e.screenrows, e.fgcolor|termbox.AttrReverse, e.bgcolor|termbox.AttrReverse, status) //termbox.ColorWhite, termbox.ColorBlack, status)
+screen.go:			termbox.SetCell(j, e.cb.point.r, e.cb.rows[filerow].render[j], e.fgcolor|termbox.AttrUnderline, e.bgcolor)
+screen.go:		termbox.SetCursor(cx, e.cb.point.r)
+screen.go:	termbox.Flush()
+screen.go:func (e *Editor) drawline(y int, fg, bg termbox.Attribute, msg string) {
+screen.go:		termbox.SetCell(x, y, c, fg, bg)
+screen.go:		termbox.SetCell(k, y, ' ', fg, bg)
+search.go:			case termbox.KeyTab:
+search.go:			case termbox.KeySpace:
+search.go:			case termbox.KeyEnter, termbox.KeyCtrlR:
+search.go:			case termbox.KeyCtrlC:
+search.go:			case termbox.KeyBackspace2, termbox.KeyBackspace:
+search.go:			case termbox.KeyCtrlG, termbox.KeyEsc:
+search.go:			case termbox.KeyArrowDown, termbox.KeyArrowRight:
+search.go:			case termbox.KeyArrowLeft, termbox.KeyArrowUp:
+search.go:				termbox.SetCursor(len(mesg)+len(query), e.screenrows+1)

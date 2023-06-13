@@ -18,7 +18,7 @@ func TestPieceSplit1(t *testing.T) {
 	tt := NewTable(s)
 	tt.Dump()
 	//    0123456789123456789212
-	p := NewPiece(Content, 0, len(s))
+	p := newPiece(Content, 0, len(s))
 
 	if p.size() != len(s) {
 		t.Errorf("Piece isn't the right size")
@@ -40,7 +40,7 @@ func TestPieceSplit2(t *testing.T) {
 	tt := NewTable(s)
 	tt.Dump()
 	//    0123456789123456789212
-	p := NewPiece(Content, 0, len(s))
+	p := newPiece(Content, 0, len(s))
 
 	if p.size() != len(s) {
 		t.Errorf("Piece isn't the right size")
@@ -61,7 +61,7 @@ func TestPieceSplit3(t *testing.T) {
 	tt := NewTable(s)
 	tt.Dump()
 	//    0123456789123456789212
-	p := NewPiece(Content, 0, len(s))
+	p := newPiece(Content, 0, len(s))
 
 	if p.size() != len(s) {
 		t.Errorf("Piece isn't the right size")
@@ -145,10 +145,10 @@ func TestInsertPiece(t *testing.T) {
 	tt := NewTable(s)
 
 	foo := "foo"
-	p := NewPiece(Content, 0, len(foo))
+	p := newPiece(Content, 0, len(foo))
 	tt.insertPieceAt(0, p)
 	foo2 := "foo2"
-	q := NewPiece(Content, 0, len(foo2))
+	q := newPiece(Content, 0, len(foo2))
 	tt.insertPieceAt(0, q)
 
 	for i, p := range tt.Mods {
@@ -164,10 +164,10 @@ func TestAppendPiece(t *testing.T) {
 	tt := NewTable(s)
 
 	foo := "foo"
-	p := NewPiece(Content, 0, len(foo))
+	p := newPiece(Content, 0, len(foo))
 	tt.appendPiece(p)
 	foo2 := "foo2"
-	q := NewPiece(Content, 0, len(foo2))
+	q := newPiece(Content, 0, len(foo2))
 	tt.appendPiece(q)
 
 	for i, p := range tt.Mods {
@@ -182,10 +182,10 @@ func TestAppendInsertPiece(t *testing.T) {
 	tt := NewTable(s)
 
 	foo := "foo"
-	p := NewPiece(Content, 0, len(foo))
+	p := newPiece(Content, 0, len(foo))
 	tt.appendPiece(p)
 	foo2 := "foo2"
-	q := NewPiece(Content, 0, len(foo2))
+	q := newPiece(Content, 0, len(foo2))
 	tt.insertPieceAt(1, q)
 
 	for i, p := range tt.Mods {

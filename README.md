@@ -69,3 +69,11 @@ Notice the goroutine attached to events coming from termbox-go, that is pretty c
 
 _orzo was written in Go by K Younger and is released
 under the BSD 2 clause license._
+
+
+## Orzo interface with WindowServer
+
+- a Pty interface, where vt100/ansi terminal codes rule
+- a Web interface where browser/JS events flow, but only on input.
+
+- a light go based window server
